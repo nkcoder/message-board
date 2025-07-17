@@ -19,11 +19,7 @@ npm install
 and then deploy with:
 
 ```
-<<<<<<< HEAD
 npm run deploy
-=======
-serverless deploy
->>>>>>> main
 ```
 
 After running deploy, you should see output similar to:
