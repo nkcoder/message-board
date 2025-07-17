@@ -6,8 +6,9 @@
 
 ## CI/CD
 
-- Github Actions
+- [ ] Github Actions
 
-## Githooks
+## Practice
 
-- husky
+- [ ] githook: husky
+- [ ] error handling
