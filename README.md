@@ -96,6 +96,7 @@ We should integrate automatic testing into CI/CD pipeline.
       Tests  13 passed (13)
    Start at  08:06:01
    Duration  388ms (transform 62ms, setup 0ms, collect 246ms, tests 10ms, environment 0ms, prepare 111ms)
+```
 
 ### Integration Testing (automatic)
 
@@ -106,12 +107,14 @@ It is a bit difficult as it involves AWS resources, but I might be wrong.
 Run the application locally or deploy to dev for end-to-end testing.
 
 Local testing:
-```
+
+```sh
 npm run offline
 npm run dev
 ```
 
 Dev testing:
-```
+
+```sh
 npm run deploy --stage dev
 ```
