@@ -66,13 +66,8 @@ Which should result in the following response:
 
 The easiest way to develop and test your function is to use the `dev` command:
 
-<<<<<<< HEAD
 ```sh
 npm run dev
-=======
-```
-serverless dev
->>>>>>> main
 ```
 
 This will start a local emulator of AWS Lambda and tunnel your requests to and from AWS Lambda, allowing you to interact with your function as if it were running in the cloud.
