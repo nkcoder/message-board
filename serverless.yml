@@ -14,6 +14,9 @@ stages:
       userTableName: 'users-table-${sls:stage}'
       messageTableName: 'messages-table-${sls:stage}'
       boardTableName: 'boards-table-${sls:stage}'
+      userRegistrationTopic: 'user-registration-topic'
+      messagePostingTopic: 'message-posting-topic'
+      boardCreationQueue: 'board-creation-queue'
 
 provider:
   name: aws
@@ -39,10 +42,42 @@ provider:
             - Fn::GetAtt: [UsersTable, Arn]
             - Fn::GetAtt: [MessagesTable, Arn]
             - Fn::GetAtt: [BoardsTable, Arn]
+            - Fn::Sub: 
+              - "${UsersTableArn}/index/*"
+              - UsersTableArn: 
+                  Fn::GetAtt: [UsersTable, Arn]
+            - Fn::Sub:
+              - "${MessagesTableArn}/index/*"
+              - MessagesTableArn: 
+                  Fn::GetAtt: [MessagesTable, Arn]
+        - Effect: Allow
+          Action:
+            - sns:Publish
+          Resource:
+            - Ref: UserRegistrationTopic
+            - Ref: MessagePostingTopic
+        - Effect: Allow
+          Action:
+            - sqs:SendMessage
+            - sqs:ReceiveMessage
+            - sqs:DeleteMessage
+            - sqs:GetQueueAttributes
+          Resource:
+            - Fn::GetAtt: [BoardCreationQueue, Arn]
+
   environment:
     USERS_TABLE: ${param:userTableName}
     MESSAGES_TABLE: ${param:messageTableName}
     BOARDS_TABLE: ${param:boardTableName}
+    REGION: ${self:provider.region}
+    USER_REGISTRATION_TOPIC_ARN:
+      Ref: UserRegistrationTopic
+    MESSAGE_POSTING_TOPIC_ARN:
+      Ref: MessagePostingTopic
+    BOARD_CREATION_QUEUE_ARN:
+      Fn::GetAtt: [BoardCreationQueue, Arn]
+    BOARD_CREATION_QUEUE_URL:
+      Ref: BoardCreationQueue
 
 functions:
   # API Gateway functions
@@ -82,12 +117,13 @@ functions:
           method: post
 
   # Event driven functions
+  # TODO: for sns, need to figure out how to reference the params
   processUserRegistration:
     handler: src/handlers/processors.processUserRegistration
     events:
       - sns:
-          topicName: 'user-registration'
-          displayName: 'User Registration'
+          arn: !Ref UserRegistrationTopic
+          topicName: 'user-registration-topic' 
 
   processBoardCreation:
     handler: src/handlers/processors.processBoardCreation
@@ -102,8 +138,8 @@ functions:
     handler: src/handlers/processors.processMessagePosting
     events:
       - sns:
-          topicName: 'message-posting'
-          displayName: 'Message Posting'
+          arn: !Ref MessagePostingTopic
+          topicName: 'message-posting-topic'
 
 resources:
   Resources:
@@ -192,11 +228,23 @@ resources:
             Projection:
               ProjectionType: ALL
 
+    # SNS topic for user registration
+    UserRegistrationTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: ${param:userRegistrationTopic}
+
+    # SNS topic for message posting
+    MessagePostingTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: ${param:messagePostingTopic}
+
     # SQS queue for board creation
     BoardCreationQueue:
       Type: AWS::SQS::Queue
       Properties:
-        QueueName: 'board-creation-queue-${sls:stage}'
+        QueueName: ${param:boardCreationQueue}
 
 plugins:
   - serverless-offline

@@ -1,13 +1,23 @@
-## Serverless
+## Review/tune configuration
 
-- [ ] DLQ for SNS and SQS
-- [ ] API Tracing
-- [ ] Tags
+- [ ] SNS
+  - retry
+  - delivery status logging
+  - active tracing
+
+- [ ] SQS
+  - dlqo
+  - monitoring/alerts
+
+- Serverless
+  - [ ] API Tracing
+  - [ ] Tags
 
 ## CI/CD
 
-- Github Actions
+- [ ] Github Actions
 
-## Githooks
+## Practice
 
-- husky
+- [ ] githook: husky
+- [ ] error handling
