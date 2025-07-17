@@ -10,12 +10,10 @@
 
 ### Non functional
 
-- QPS?
-- Rate limit?
-
+- Rate limit: API Gateway
 
 - Extensibility
-- Scalability
+- Scalability: lambda & dynamodb
 - Availability
 
 - Testing
