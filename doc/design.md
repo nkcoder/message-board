@@ -54,3 +54,9 @@
 - boardId (GSI, pk)
 - userId (GSI, pk)
 - createdAt (GSI, SK)
+
+## Deployment
+
+- CI/CD: github actions
+- Infrastructure as code: Serverless Framework
+- Cloud provider: AWS
