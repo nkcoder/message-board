@@ -42,6 +42,14 @@ provider:
             - Fn::GetAtt: [UsersTable, Arn]
             - Fn::GetAtt: [MessagesTable, Arn]
             - Fn::GetAtt: [BoardsTable, Arn]
+            - Fn::Sub: 
+              - "${UsersTableArn}/index/*"
+              - UsersTableArn: 
+                  Fn::GetAtt: [UsersTable, Arn]
+            - Fn::Sub:
+              - "${MessagesTableArn}/index/*"
+              - MessagesTableArn: 
+                  Fn::GetAtt: [MessagesTable, Arn]
         - Effect: Allow
           Action:
             - sns:Publish

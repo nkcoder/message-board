@@ -1,20 +1,44 @@
-import { PutCommand } from "@aws-sdk/lib-dynamodb";
-import { RegisterUserSchema } from "../schema/userSchema";
+import { PutCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
+import { UserSchema, userSchema } from "../schema/userSchema";
 import { dynamoDbClient } from "./aws";
+import { generateId } from "./idGenerator";
 
-export const createUser = async (user: RegisterUserSchema): Promise<void> => {
-  try {
-    const db = dynamoDbClient();
-    await db.send(new PutCommand({
-      TableName: process.env.USERS_TABLE,
-      Item: {
-        id: user.email,
-        name: user.name,
-        createdAt: new Date().toISOString(),
-      },
-    }));
-  } catch (error) {
-    console.error(`Error creating user: ${error}`);
-    throw error;
+export const createUser = async (email: string, name: string): Promise<string> => {
+  const existingUser = await getUserByEmail(email);
+  if (existingUser) {
+    throw new Error(`User with email ${email} already exists`);
   }
+
+  const id = generateId();
+  const db = dynamoDbClient();
+  await db.send(new PutCommand({
+    TableName: process.env.USERS_TABLE,
+    Item: {
+      id,
+      email,
+      name,
+      createdAt: new Date().toISOString(),
+    },
+  }));
+  return id;
+
+};
+
+export const getUserByEmail = async (email: string): Promise<UserSchema | null> => {
+  const db = dynamoDbClient();
+  const result = await db.send(new QueryCommand({
+    TableName: process.env.USERS_TABLE,
+    IndexName: 'email-index',
+    KeyConditionExpression: 'email = :email',
+    ExpressionAttributeValues: {
+      ':email': email,
+    },
+  }));
+
+  if (!result.Items || result.Items.length === 0) {
+    return null;
+  }
+
+  console.log(`result: ${JSON.stringify(result.Items[0])}`);
+  return userSchema.parse(result.Items[0]);
 };
