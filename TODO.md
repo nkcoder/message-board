@@ -6,7 +6,7 @@
   - active tracing
 
 - [ ] SQS
-  - dlqo
+  - dlq
   - monitoring/alerts
 
 - Serverless
@@ -26,7 +26,7 @@
 
 ### Get user by email
 
-Add a handler to `handlers/user.getUserByEmail`: 
+Add a handler to `handlers/user.getUserByEmail`:
 - get user by email from DynamoDB
 - return synchronously.
 
