@@ -2,7 +2,7 @@ name: CI/CD
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
+    types: [ready_for_review, assigned]
     branches: [main]
   push:
     branches: [main]
@@ -40,6 +40,9 @@ jobs:
   deploy-production:
     name: Deploy to Production
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     environment: production
 
