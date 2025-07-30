@@ -1,20 +1,12 @@
-import { PublishCommand } from "@aws-sdk/client-sns";
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
-import {
-  getUserByEmailSchema,
-  registerUserSchema,
-  User,
-} from "../schema/userSchema";
-import { snsClient } from "../services/aws";
-import * as userService from "../services/userService";
+import { PublishCommand } from '@aws-sdk/client-sns';
+import type { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
+import { registerUserSchema } from '../schema/userSchema';
+import { snsClient } from '../services/aws';
+import * as userService from '../services/userService';
 
-export const registerUser = async (
-  event: APIGatewayProxyEvent,
-): Promise<APIGatewayProxyResult> => {
+export const registerUser = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   console.info(`Received user registration request: ${event.body}`);
-  const registerRequest = registerUserSchema.parse(
-    JSON.parse(event.body ?? "{}"),
-  );
+  const registerRequest = registerUserSchema.parse(JSON.parse(event.body ?? '{}'));
 
   // send user registration event to SNS
   const topicArn = process.env.USER_REGISTRATION_TOPIC_ARN;
@@ -27,24 +19,20 @@ export const registerUser = async (
 
   return {
     statusCode: 202, // Accepted, but not processed completely
-    body: JSON.stringify({ message: "User registration request is accepted." }),
+    body: JSON.stringify({ message: 'User registration request is accepted.' }),
   };
 };
 
-export const getUserByEmail = async (
-  event: APIGatewayProxyEvent,
-): Promise<APIGatewayProxyResult> => {
-  console.info(
-    `Received fetch user by email request: ${event.pathParameters?.email}`,
-  );
+export const getUserByEmail = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+  console.info(`Received fetch user by email request: ${event.pathParameters?.email}`);
 
   // Get email from path parameters
   const email = event.pathParameters?.email;
 
-  if (!email) {
+  if (email == null || email === '') {
     return {
       statusCode: 400,
-      body: JSON.stringify({ message: "Email parameter is required" }),
+      body: JSON.stringify({ message: 'Email parameter is required' }),
     };
   }
 
@@ -56,12 +44,12 @@ export const getUserByEmail = async (
   if (!emailRegex.test(decodedEmail)) {
     return {
       statusCode: 400,
-      body: JSON.stringify({ message: "Invalid email format" }),
+      body: JSON.stringify({ message: 'Invalid email format' }),
     };
   }
 
   const user = await userService.getUserByEmail(decodedEmail);
-  if (!user) {
+  if (user === null) {
     return {
       statusCode: 404,
       body: JSON.stringify({

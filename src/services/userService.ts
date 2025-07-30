@@ -1,14 +1,11 @@
-import { PutCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
-import { User, userSchema } from "../schema/userSchema";
-import { dynamoDbClient } from "./aws";
-import { generateId } from "./idGenerator";
+import { PutCommand, QueryCommand } from '@aws-sdk/lib-dynamodb';
+import { userSchema, type User } from '../schema/userSchema';
+import { dynamoDbClient } from './aws';
+import { generateId } from './idGenerator';
 
-export const createUser = async (
-  email: string,
-  name: string,
-): Promise<string> => {
+export const createUser = async (email: string, name: string): Promise<string> => {
   const existingUser = await getUserByEmail(email);
-  if (existingUser) {
+  if (existingUser !== null) {
     throw new Error(`User with email ${email} already exists`);
   }
 
@@ -23,7 +20,7 @@ export const createUser = async (
         name,
         createdAt: new Date().toISOString(),
       },
-    }),
+    })
   );
   return id;
 };
@@ -33,12 +30,12 @@ export const getUserByEmail = async (email: string): Promise<User | null> => {
   const result = await db.send(
     new QueryCommand({
       TableName: process.env.USERS_TABLE,
-      IndexName: "email-index",
-      KeyConditionExpression: "email = :email",
+      IndexName: 'email-index',
+      KeyConditionExpression: 'email = :email',
       ExpressionAttributeValues: {
-        ":email": email,
+        ':email': email,
       },
-    }),
+    })
   );
 
   if (!result.Items || result.Items.length === 0) {
