@@ -11,12 +11,12 @@ stages:
   default:
     observability: false
     params:
-      userTableName: "users-table-${sls:stage}"
-      messageTableName: "messages-table-${sls:stage}"
-      boardTableName: "boards-table-${sls:stage}"
-      userRegistrationTopic: "user-registration-topic"
-      messagePostingTopic: "message-posting-topic"
-      boardCreationQueue: "board-creation-queue"
+      userTableName: 'users-table-${sls:stage}'
+      messageTableName: 'messages-table-${sls:stage}'
+      boardTableName: 'boards-table-${sls:stage}'
+      userRegistrationTopic: 'user-registration-topic'
+      messagePostingTopic: 'message-posting-topic'
+      boardCreationQueue: 'board-creation-queue'
 
 provider:
   name: aws
@@ -43,11 +43,11 @@ provider:
             - Fn::GetAtt: [MessagesTable, Arn]
             - Fn::GetAtt: [BoardsTable, Arn]
             - Fn::Sub:
-                - "${UsersTableArn}/index/*"
+                - '${UsersTableArn}/index/*'
                 - UsersTableArn:
                     Fn::GetAtt: [UsersTable, Arn]
             - Fn::Sub:
-                - "${MessagesTableArn}/index/*"
+                - '${MessagesTableArn}/index/*'
                 - MessagesTableArn:
                     Fn::GetAtt: [MessagesTable, Arn]
         - Effect: Allow
@@ -123,7 +123,7 @@ functions:
     events:
       - sns:
           arn: !Ref UserRegistrationTopic
-          topicName: "user-registration-topic"
+          topicName: 'user-registration-topic'
 
   processBoardCreation:
     handler: src/handlers/processors.processBoardCreation
@@ -139,7 +139,7 @@ functions:
     events:
       - sns:
           arn: !Ref MessagePostingTopic
-          topicName: "message-posting-topic"
+          topicName: 'message-posting-topic'
 
 resources:
   Resources:
