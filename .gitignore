@@ -1,0 +1,6 @@
+.build
+.claude
+.serverless
+coverage
+node_modules
+
